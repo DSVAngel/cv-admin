@@ -22,8 +22,8 @@ jobs:
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: |
-          docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+        run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
+
       - name: Download and run the Docker base image
         run: docker run -d --name http_base httpd
       - name: copy model to the Docker image
