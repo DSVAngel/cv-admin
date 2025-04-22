@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2 # Recommended to use the latest version
       - name: Use Node.js 20.x
-        uses: actions/setup-node@vw # Recommended to use the latest version
+        uses: actions/setup-node@v2 # Recommended to use the latest version
         with:
           node-version: 20.x
       - name: npm install
