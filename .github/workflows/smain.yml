@@ -1,0 +1,31 @@
+name: Angular_DockerImage
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+jobs:
+  angular_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2 # Recommended to use the latest version
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v2 # Recommended to use the latest version
+        with:
+          node-version: 20.x
+      - name: npm install
+        run: npm ci
+      - name: build
+        run: npm run build
+      - name: Docker login
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+
+      - name: Download and run the Docker base image
+        run: docker run -d --name http_base httpd
+      - name: copy model to the Docker image
+        run: docker cp dist/cv-admin/. http_base:/usr/local/apache2/htdocs
+      - name: Build the custom Docker image
+        run: docker commit --change "ENV MODEL_NAME http_base" http_base ${{secrets.DOCKER_USERNAME}}/mycv:${{ github.sha }}
+      - name: Docker Push
+        run: docker push ${{secrets.DOCKER_USERNAME}}/mycv:${{ github.sha }}
