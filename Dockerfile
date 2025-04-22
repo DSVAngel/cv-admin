@@ -1,20 +1,23 @@
-FROM node:18-alpine as builder
 
+FROM node:18-alpine as builder
 WORKDIR /app
 
 COPY package*.json ./
-
 RUN npm install
 
 COPY . .
+RUN npm run build -- --output-path=docs
 
-RUN npm run build --prod
+
+RUN mv docs/browser/*.* docs
 
 FROM nginx:alpine
 
-COPY --from=builder /app/dist/cv-admin /usr/share/nginx/html
+
+COPY --from=builder /app/docs /usr/share/nginx/html
+
+
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
-
 CMD ["nginx", "-g", "daemon off;"]
