@@ -1,0 +1,101 @@
+<div class="editor-container">
+  <h2>Administrar Experiencia Laboral</h2>
+
+  <!-- Mensajes de estado -->
+  <div *ngIf="message" [ngClass]="{'message': true, 'success': message.type === 'success', 'error': message.type === 'error'}">
+    {{ message.text }}
+  </div>
+
+  <!-- Formulario de edición -->
+  <div class="form-container">
+    <form  [formGroup]="experienceForm"(ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="company">Empresa:</label>
+        <input type="text" id="company" formControlName="company" class="form-control">
+        <div class="error-message" *ngIf="experienceForm.get('company')?.touched && experienceForm.get('company')?.errors?.['required']">
+          La empresa es requerida
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="position">Cargo:</label>
+        <input type="text" id="position" formControlName="position" class="form-control">
+        <div class="error-message" *ngIf="experienceForm.get('position')?.touched && experienceForm.get('position')?.errors?.['required']">
+          El cargo es requerido
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group half-width">
+          <label for="startDate">Fecha de inicio:</label>
+          <input type="text" id="startDate" formControlName="startDate" class="form-control" placeholder="mm/yyyy">
+          <div class="error-message" *ngIf="experienceForm.get('startDate')?.touched && experienceForm.get('startDate')?.errors?.['required']">
+            La fecha de inicio es requerida
+          </div>
+        </div>
+
+        <div class="form-group half-width">
+          <label for="endDate">Fecha de fin:</label>
+          <input type="text" id="endDate" formControlName="endDate" class="form-control" placeholder="mm/yyyy">
+          <div class="error-message" *ngIf="experienceForm.get('endDate')?.touched && experienceForm.get('endDate')?.errors?.['required']">
+            La fecha de fin es requerida
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="location">Ubicación:</label>
+        <input type="text" id="location" formControlName="location" class="form-control">
+        <div class="error-message" *ngIf="experienceForm.get('location')?.touched && experienceForm.get('location')?.errors?.['required']">
+          La ubicación es requerida
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="accomplishments">Logros:</label>
+        <textarea id="accomplishments" formControlName="accomplishments" class="form-control" rows="4"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="!experienceForm.valid || isLoading">
+          {{ editingId ? 'Actualizar' : 'Crear' }}
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="resetForm()" [disabled]="isLoading">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Lista de experiencias existentes -->
+  <div class="list-container">
+    <h3>Experiencias Laborales Existentes</h3>
+    <div *ngIf="isLoading" class="loading">Cargando...</div>
+    <table *ngIf="!isLoading && experiences.length > 0" class="data-table">
+      <thead>
+        <tr>
+          <th>Empresa</th>
+          <th>Cargo</th>
+          <th>Periodo</th>
+          <th>Ubicación</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let experience of experiences">
+          <td>{{ experience.company }}</td>
+          <td>{{ experience.position }}</td>
+          <td>{{ experience.startDate }} - {{ experience.endDate }}</td>
+          <td>{{ experience.location }}</td>
+          <td>
+            <button class="btn btn-edit" (click)="editExperience(experience)">Editar</button>
+            <button class="btn btn-delete" (click)="deleteExperience(experience.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="!isLoading && experiences.length === 0" class="no-data">
+      No hay experiencias laborales registradas
+    </div>
+  </div>
+</div>

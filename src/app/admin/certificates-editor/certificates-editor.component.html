@@ -1,0 +1,85 @@
+<div class="editor-container">
+  <h2>Administrar Certificados</h2>
+
+  <!-- Mensajes de estado -->
+  <div *ngIf="message" [ngClass]="{'message': true, 'success': message.type === 'success', 'error': message.type === 'error'}">
+    {{ message.text }}
+  </div>
+
+  <!-- Formulario de edición -->
+  <div class="form-container">
+    <form  [formGroup]="certificateForm"(ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">Nombre del certificado:</label>
+        <input type="text" id="name" formControlName="name" class="form-control">
+        <div class="error-message" *ngIf="certificateForm.get('name')?.touched && certificateForm.get('name')?.errors?.['required']">
+          El nombre es requerido
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="organization">Organización emisora:</label>
+        <input type="text" id="organization" formControlName="organization" class="form-control">
+        <div class="error-message" *ngIf="certificateForm.get('organization')?.touched && certificateForm.get('organization')?.errors?.['required']">
+          La organización es requerida
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group half-width">
+          <label for="issueDate">Fecha de emisión:</label>
+          <input type="date" id="issueDate" formControlName="issueDate" class="form-control">
+          <div class="error-message" *ngIf="certificateForm.get('issueDate')?.touched && certificateForm.get('issueDate')?.errors?.['required']">
+            La fecha de emisión es requerida
+          </div>
+        </div>
+
+        <div class="form-group half-width">
+          <label for="expirationDate">Fecha de expiración (opcional):</label>
+          <input type="date" id="expirationDate" formControlName="expirationDate" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="!certificateForm.valid || isLoading">
+          {{ editingId ? 'Actualizar' : 'Crear' }}
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="resetForm()" [disabled]="isLoading">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Lista de certificados existentes -->
+  <div class="list-container">
+    <h3>Certificados Existentes</h3>
+    <div *ngIf="isLoading" class="loading">Cargando...</div>
+    <table *ngIf="!isLoading && certificates.length > 0" class="data-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Organización</th>
+          <th>Fecha de emisión</th>
+          <th>Fecha de expiración</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let certificate of certificates">
+          <td>{{ certificate.name }}</td>
+          <td>{{ certificate.organization }}</td>
+          <td>{{ certificate.issueDate | date:'dd/MM/yyyy' }}</td>
+          <td>{{ certificate.expirationDate ? (certificate.expirationDate | date:'dd/MM/yyyy') : 'Sin expiración' }}</td>
+          <td>
+            <button class="btn btn-edit" (click)="editCertificate(certificate)">Editar</button>
+            <button class="btn btn-delete" (click)="deleteCertificate(certificate.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="!isLoading && certificates.length === 0" class="no-data">
+      No hay certificados registrados
+    </div>
+  </div>
+</div>
